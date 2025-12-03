@@ -113,3 +113,4 @@ double Grid::dx(int i) const { return dxx[i]; }
 double Grid::dy(int j) const { return dyy[j]; }
 int Grid::getNx() const { return x_c.size() - 1; }
 int Grid::getNy() const { return y_c.size() - 1; }
+double Grid::getD() const{return 1;};

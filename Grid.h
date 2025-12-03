@@ -15,6 +15,7 @@ public:
     double dy(int j) const;
     int getNx() const;
     int getNy() const;
+    double getD() const;
 
 private:
     enum BlockIndex { LEFT = 0, MIDDLE = 1, RIGHT = 2 };
