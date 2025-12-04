@@ -37,7 +37,7 @@ void Solver::Boundary_condition(double dtt) {
     // Top & bottom boundaries
     for (int i = 0; i <= Nx; ++i) {
         field_vectors.u[Ny-1][i] = field_vectors.u[Ny-2][i];
-        field_vectors.u[0][i]   = field_vectors.u[1][i];
+        field_vectors.u[0][i] = field_vectors.u[1][i];
     }
 
     // Inlet/outlet for u
@@ -45,20 +45,14 @@ void Solver::Boundary_condition(double dtt) {
 
         field_vectors.u[j][0] = Un;
 
-        field_vectors.u_next[j][Nx] =
-            field_vectors.u[j][Nx] -
-            (field_vectors.u[j][Nx] - field_vectors.u[j][Nx-1]) *
-            (Un * dt / Domain_grid.dx(Nx-1));
+        field_vectors.u_next[j][Nx] = field_vectors.u[j][Nx] - (field_vectors.u[j][Nx] - field_vectors.u[j][Nx-1]) *(Un * dt / Domain_grid.dx(Nx-1));
     }
 
     // v inlet / outlet
     for (int j = 0; j <= Ny; ++j) {
         field_vectors.v[j][0] = 0;
 
-        field_vectors.v_next[j][Nx-1] =
-            field_vectors.v[j][Nx-1] -
-            (field_vectors.v[j][Nx-1] - field_vectors.v[j][Nx-2]) *
-            (Un * dt / Domain_grid.dx(Nx-1));
+        field_vectors.v_next[j][Nx-1] = field_vectors.v[j][Nx-1] - (field_vectors.v[j][Nx-1] - field_vectors.v[j][Nx-2]) *  (Un * dt / Domain_grid.dx(Nx-1));
     }
 
     // wall BCs for v
@@ -225,26 +219,26 @@ void Solver::pressure_boundary() {
                 double X = Domain_grid.getX(i);
                 double Y = Domain_grid.getY(j);
 
-                if (X == Square_cylinder.getXs() - Domain_grid.getD()/2 &&
+                if (X - Square_cylinder.getXs() - Domain_grid.getD()/2 <10e-4 &&
                     Y >= Square_cylinder.getYs() - Domain_grid.getD()/2 &&
                     Y <= Square_cylinder.getYs() + Domain_grid.getD()/2)
                     field_vectors.P_next[j][i] = field_vectors.P_next[j][i-1];
 
-                if (X == Square_cylinder.getXs() + Domain_grid.getD()/2 &&
+                if (X - Square_cylinder.getXs() + Domain_grid.getD()/2 <10e-4 &&
                     Y >= Square_cylinder.getYs() - Domain_grid.getD()/2 &&
                     Y <= Square_cylinder.getYs() + Domain_grid.getD()/2)
                     field_vectors.P_next[j][i] = field_vectors.P_next[j][i+1];
 
-                if (Y == Square_cylinder.getYs() - Domain_grid.getD()/2 &&
+                if (Y - Square_cylinder.getYs() - Domain_grid.getD()/2<10e-4 &&
                     X >= Square_cylinder.getXs() - Domain_grid.getD()/2 &&
                     X <= Square_cylinder.getXs() + Domain_grid.getD()/2)
                     field_vectors.P_next[j][i] = field_vectors.P_next[j-1][i];
 
-                if (Y == Square_cylinder.getYs() + Domain_grid.getD()/2 &&
+                if (Y - Square_cylinder.getYs() + Domain_grid.getD()/2 <10e-4&&
                     X >= Square_cylinder.getXs() - Domain_grid.getD()/2 &&
                     X <= Square_cylinder.getXs() + Domain_grid.getD()/2)
                     field_vectors.P_next[j][i] = field_vectors.P_next[j+1][i];
-            }
+           }
         }
     }
 }
@@ -388,7 +382,7 @@ void Solver::solve(double ultimate_time) {
             for (int i = 0; i <= Nx; ++i)
                 field_vectors.sumu[j][i] += field_vectors.u[j][i] * dt;
 
-        dt = 0.00001;
+        dt = 0.0000025;
 
         compute_lift_drag(Cd, Cdp);
         Monior(flowtime, dt);
@@ -396,7 +390,7 @@ void Solver::solve(double ultimate_time) {
         flowtime += dt;
     }
 
-    cout << "=== Simulation Finished ===\n";
+    //std::cout << "=== Simulation Finished ===\n";
 }
 
 

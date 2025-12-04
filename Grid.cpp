@@ -17,8 +17,9 @@ Grid::Grid(int Nx1, int Nx2, int Nx3,
       dyy(Ny1 + Ny2 + Ny3),
       x_c(Nx1 + Nx2 + Nx3 + 1, 0.0),
       y_c(Ny1 + Ny2 + Ny3 + 1, 0.0),
-      dl{8.5, 1.0, 16.5},
-      dH{9.5, 1.0, 9.5}
+      dl{ 0.327 * L, 0.038 * L, 0.635 * L },
+dH { 0.475 * H, 0.05 * H, 0.475 * H }
+
 {
     compute_dxx();
     compute_dyy();
@@ -106,6 +107,29 @@ void Grid::build_coordinates() {
     for (size_t j = 1; j < y_c.size(); j++)
         y_c[j] = y_c[j - 1] + dyy[j - 1];
 }
+
+
+
+    void Grid::mesh_generation()
+    {
+           ofstream f("Mesh.dat");
+        
+  int Nx_total = Nx[0] + Nx[1] + Nx[2], Ny_total = Ny[0] + Ny[1] + Ny[2];
+    for(int j=0;j<Ny_total;j++){
+    for(int i=0;i<Nx_total;i++)
+        {
+            f<< x_c[i]<<"\t"<<y_c[j] <<"\n";
+            cout<<"i=  "<< i<<'\t'<<"dx=  "<<'\t'<<dxx[i]<<'\t'<<"j=  "<< j<<'\t'<<"dy=  "<<'\t'<<dyy[j]<<endl;
+        }
+        f<<"\n";
+        
+    }
+    f.close();
+
+    
+
+    }
+
 
 double Grid::getX(int i) const { return x_c[i]; }
 double Grid::getY(int j) const { return y_c[j]; }

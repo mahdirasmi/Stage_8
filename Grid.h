@@ -17,7 +17,7 @@ public:
     int getNy() const;
     double getD() const;
 
-private:
+public:
     enum BlockIndex { LEFT = 0, MIDDLE = 1, RIGHT = 2 };
 
     std::vector<int> Nx, Ny;
@@ -30,6 +30,7 @@ private:
     std::vector<double> dH;
 
     double stretch(double s, double k);
+    void mesh_generation();
 
     void compute_dxx();
     void compute_dyy();

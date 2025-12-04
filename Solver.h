@@ -7,13 +7,6 @@
 #include "Vectors.h"
 #include <vector>
 
-
-double total_error = 0.0;
-double report_error=0;
-double CFL_max=0.05;
-double Cd = 0.0, Cdp = 0.0;
-double omega=0.5;
-
 class Solver {
 
 private:
@@ -27,9 +20,12 @@ public:
     int MaxIter = 30;
     double Max_error = 1e-5;
     double dtsum = 0;
+    double total_error = 0.0;
     double report_error = 0;
     double omega = 1.0;
     double Cd = 0.0, Cdp = 0.0;
+    double CFL_max=0.05;
+   
 
     Solver(Grid& grid, Property& fuidprop, Vectors& vec_vec, Cylinder& cyl);
 
