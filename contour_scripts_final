@@ -1,0 +1,16 @@
+set terminal qt
+set title "CFD Contour of Velocity Magnitude"
+set xlabel "X"
+set ylabel "Y"
+
+set view map
+unset surface
+set pm3d at b
+set palette defined (0 "blue", 0.25 "cyan", 0.5 "green", 0.75 "yellow", 1 "red")
+set contour base
+set cntrparam levels 10
+set colorbox
+set cblabel "Velocity Magnitude (m/s)" rotate by 270 offset 1,0
+splot 'Contour_u.txt' with pm3d notitle, '' with lines lc rgb "black" notitle
+
+
