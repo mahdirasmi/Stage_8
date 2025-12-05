@@ -17,7 +17,7 @@ Solver::Solver(Grid& grid, Property& fuidprop, Vectors& vec_vec, Cylinder& cyl)
       fluid_property(fuidprop),
       field_vectors(vec_vec),
       Square_cylinder(cyl),
-      initialdt(0.000001)
+      initialdt(0.001)
 {
 }
 
@@ -196,51 +196,35 @@ void Solver::Interrior_Velocity(double timestep) {
 /******************** Pressure Boundary Conditions ************************/
 void Solver::pressure_boundary() {
 
-    int Nx = Domain_grid.getNx();
-    int Ny = Domain_grid.getNy();
 
-    for (int j = 0; j < Ny; ++j) {
-        for (int i = 0; i < Nx; ++i) {
+    
+    
+         int Nx = Domain_grid.getNx();
+        int Ny = Domain_grid.getNy();
+        for (int j = 0; j < Ny ; ++j) {
+        for (int i = 0; i < Nx ; ++i) {
+                
+         if (j == 0) {field_vectors.P_next[j][i]=field_vectors.P_next[j + 1][i]; }
+          //if (j == 0) {field_vectors.P_next[j][i]=0; }
+        if (j == Ny - 1) {field_vectors.P_next[j][i]=field_vectors.P_next[j -1][i];}
+          //if (j == Ny - 1) {field_vectors.P_next[j][i]=0;}
+          if (i == 0) {field_vectors.P_next[j][i]=field_vectors.P_next[j][i+1];}
+          if (i == Nx - 1) {field_vectors.P_next[j][i]=0;}
 
-            if (j == 0)
+       
+        if (Square_cylinder.is_inside(Domain_grid.getX(i), Domain_grid.getY(j))) {
+        if (Domain_grid.getX(i) - Square_cylinder.getXs() - Domain_grid.getD() / 2.0<10e-4 &&  Domain_grid.getY(j) >= Square_cylinder.getYs() - Domain_grid.getD() / 2.0 && Domain_grid.getY(j) <= Square_cylinder.getYs() + Domain_grid.getD() / 2.0) 
+            field_vectors.P_next[j][i] = field_vectors.P_next[j][i-1];
+            if(Domain_grid.getX(i) - Square_cylinder.getXs() + Domain_grid.getD() / 2.0 <10e-4 &&  Domain_grid.getY(j) >= Square_cylinder.getYs() - Domain_grid.getD() / 2.0 && Domain_grid.getY(j) <= Square_cylinder.getYs() + Domain_grid.getD() / 2.0)
+                   field_vectors.P_next[j][i] = field_vectors.P_next[j][i+1];
+            if(Domain_grid.getY(j) - Square_cylinder.getYs() - Domain_grid.getD() / 2.0<10e-4 && Domain_grid.getX(i) >= Square_cylinder.getXs() - Domain_grid.getD() / 2.0 && Domain_grid.getX(i) <= Square_cylinder.getXs() + Domain_grid.getD() / 2.0)
+                  field_vectors.P_next[j][i] = field_vectors.P_next[j-1][i];
+            if ( Domain_grid.getY(j) - Square_cylinder.getYs() + Domain_grid.getD() / 2.0<10e-4 && Domain_grid.getX(i) >= Square_cylinder.getXs() - Domain_grid.getD() / 2.0 && Domain_grid.getX(i) <= Square_cylinder.getXs() + Domain_grid.getD() / 2.0)
                 field_vectors.P_next[j][i] = field_vectors.P_next[j+1][i];
-
-            if (j == Ny-1)
-                field_vectors.P_next[j][i] = field_vectors.P_next[j-1][i];
-
-            if (i == 0)
-                field_vectors.P_next[j][i] = field_vectors.P_next[j][i+1];
-
-            if (i == Nx-1)
-                field_vectors.P_next[j][i] = field_vectors.P_next[j][i-1];
-
-            if (Square_cylinder.is_inside(Domain_grid.getX(i), Domain_grid.getY(j))) {
-
-                double X = Domain_grid.getX(i);
-                double Y = Domain_grid.getY(j);
-
-                if (X - Square_cylinder.getXs() - Domain_grid.getD()/2 <10e-4 &&
-                    Y >= Square_cylinder.getYs() - Domain_grid.getD()/2 &&
-                    Y <= Square_cylinder.getYs() + Domain_grid.getD()/2)
-                    field_vectors.P_next[j][i] = field_vectors.P_next[j][i-1];
-
-                if (X - Square_cylinder.getXs() + Domain_grid.getD()/2 <10e-4 &&
-                    Y >= Square_cylinder.getYs() - Domain_grid.getD()/2 &&
-                    Y <= Square_cylinder.getYs() + Domain_grid.getD()/2)
-                    field_vectors.P_next[j][i] = field_vectors.P_next[j][i+1];
-
-                if (Y - Square_cylinder.getYs() - Domain_grid.getD()/2<10e-4 &&
-                    X >= Square_cylinder.getXs() - Domain_grid.getD()/2 &&
-                    X <= Square_cylinder.getXs() + Domain_grid.getD()/2)
-                    field_vectors.P_next[j][i] = field_vectors.P_next[j-1][i];
-
-                if (Y - Square_cylinder.getYs() + Domain_grid.getD()/2 <10e-4&&
-                    X >= Square_cylinder.getXs() - Domain_grid.getD()/2 &&
-                    X <= Square_cylinder.getXs() + Domain_grid.getD()/2)
-                    field_vectors.P_next[j][i] = field_vectors.P_next[j+1][i];
-           }
+             
         }
-    }
+     }
+     }
 }
 
 /********************** Gauss–Seidel ***************************/
@@ -382,7 +366,16 @@ void Solver::solve(double ultimate_time) {
             for (int i = 0; i <= Nx; ++i)
                 field_vectors.sumu[j][i] += field_vectors.u[j][i] * dt;
 
-        dt = 0.0000025;
+      
+         double Max_velocity = 0.0;
+            for (int j = 1; j < Ny; ++j)
+            for (int i = 1; i < Nx - 1; ++i) {
+            Max_velocity = max(Max_velocity, sqrt(field_vectors.u[j][i] * field_vectors.u[j][i] +
+                                                          field_vectors.v[j][i] * field_vectors.v[j][i]));
+
+            if (Max_velocity > 1e-8)
+                dt = CFL_max * min(Domain_grid.dx(i), Domain_grid.dy(j)) / Max_velocity;
+            }
 
         compute_lift_drag(Cd, Cdp);
         Monior(flowtime, dt);

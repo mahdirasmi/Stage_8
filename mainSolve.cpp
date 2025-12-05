@@ -9,8 +9,8 @@ int main()
 {
 
     Grid grid(
-        3*15, 25, 3*25,       
-        3*15, 25, 3*15,       
+        10*5, 20*5, 12*5,       
+        10*5, 20*5, 10*5,       
         26.0, 20.0);    
 
 grid.mesh_generation();
@@ -34,8 +34,8 @@ grid.mesh_generation();
    Solver solver(grid, property, vectors, cylinder);
 
    
-   solver.solve(50);
-  solver.generate_report();
+    solver.solve(50);
+   // solver.generate_report();
 
    std:: cout << "\n✅ Simulation complete!\n";
 

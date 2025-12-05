@@ -1,0 +1,37 @@
+# --- Gnuplot Script to Plot Mesh.dat ---
+
+# Set the output terminal (e.g., to a PNG file)
+set terminal pngcairo size 1024,768 enhanced font 'Verdana,10'
+set output 'mesh_plot.png'
+
+# --- Plot Configuration ---
+
+# Set the plot to a top-down 2D view
+set view map
+
+# Set labels and title
+set title 'Structured Mesh Grid (Mesh.dat)'
+set xlabel 'X Coordinate'
+set ylabel 'Y Coordinate'
+
+# Ensure the plot axes are scaled correctly (aspect ratio)
+# This will make your 8-unit-high domain look correct next
+# to your 40-unit-wide domain.
+set size ratio -1
+
+# Remove the legend/key, as it's not needed
+unset key
+
+# --- The Plot Command ---
+
+# Use 'splot' (surface plot) to draw the structured grid.
+# Gnuplot will automatically draw lines in both directions.
+# We tell it to use column 1 as X, column 2 as Y, and
+# a constant value (0) for Z, since this is a 2D mesh.
+
+splot 'Mesh.dat' using 1:2:(0) with lines
+
+# Unset the output to finish writing the file
+unset output
+
+print "Mesh plot saved to mesh_plot.png"

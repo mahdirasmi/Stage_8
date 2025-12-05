@@ -17,12 +17,12 @@ private:
 
 public:
     double flowtime = 0.0, initialdt;
-    int MaxIter = 30;
+    int MaxIter = 200;
     double Max_error = 1e-5;
     double dtsum = 0;
     double total_error = 0.0;
     double report_error = 0;
-    double omega = 1.0;
+    double omega = 0.8;
     double Cd = 0.0, Cdp = 0.0;
     double CFL_max=0.05;
    
